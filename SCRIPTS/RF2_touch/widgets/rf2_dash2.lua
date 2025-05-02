@@ -13,104 +13,7 @@ local err_img = bitmap.open(baseDir.."widgets/img/no_connection_wr.png")
 local fan = 3
 local fanT1 = 0
 
-local wgt = {
-    values = {
-        craft_name = "-------",
-        timer_str = "--:--",
-        rpm = -1,
-        rpm_str = "---",
-        profile_id = -1,
-        profile_id_str = "--",
-        rate_id = -1,
-        rate_id_str = "--",
-
-        vbat = -1,
-        vcel = -1,
-        cell_percent = -1,
-        volt = -1,
-        curr = 0,
-        curr_max = 0,
-        curr_str = "0",
-        curr_max_str = "0",
-        curr_percent = 0,
-        curr_max_percent = 0,
-        capaTotal = -1,
-        capaUsed = -1,
-        capaPercent = -1,
-        capaPercent_txt = "---",
-
-        EscT = 0,
-        EscT_max = 0,
-        EscT_str = "0",
-        EscT_max_str = "0",
-        EscT_percent = 0,
-        EscT_max_percent = 0,
-
-        rqly = 0,
-        rqly_min = 0,
-        rqly_str = 0,
-        rqly_min_str = 0,
-
-        governor_str = "-------",
-        bb_enabled = true,
-        bb_percent = 0,
-        bb_size = 0,
-        bb_txt = "Blackbox: --% 0MB",
-        rescue_on = false,
-        rescue_txt = "--",
-        is_arm = false,
-        arm_fail = false,
-        arm_disable_flags_list = nil,
-        arm_disable_flags_txt = "",
-
-        img_last_name = "---",
-        img_craft_name_for_image = "---",
-        img_box_1 = nil,
-        img_replacment_area1 = nil,
-        img_box_2 = nil,
-        img_replacment_area2 = nil,
-
-        thr = 0,
-        thr_max = 0,
-    },
-
-    msp = {
-        cache = {
-            mspPidTuningAll = {
-                {
-                    roll =  { p = -1, i = -1, d = -1, f = -1},
-                    pitch = { p = -1, i = -1, d = -1, f = -1},
-                    yaw =   { p = -1, i = -1, d = -1 ,f = -1},
-                },
-                {
-                    roll =  { p = -1, i = -1, d = -1, f = -1},
-                    pitch = { p = -1, i = -1, d = -1, f = -1},
-                    yaw =   { p = -1, i = -1, d = -1 ,f = -1},
-                },
-                {
-                    roll =  { p = -1, i = -1, d = -1, f = -1},
-                    pitch = { p = -1, i = -1, d = -1, f = -1},
-                    yaw =   { p = -1, i = -1, d = -1 ,f = -1},
-                },
-                {
-                    roll =  { p = -1, i = -1, d = -1, f = -1},
-                    pitch = { p = -1, i = -1, d = -1, f = -1},
-                    yaw =   { p = -1, i = -1, d = -1 ,f = -1},
-                },
-                {
-                    roll =  { p = -1, i = -1, d = -1, f = -1},
-                    pitch = { p = -1, i = -1, d = -1, f = -1},
-                    yaw =   { p = -1, i = -1, d = -1 ,f = -1},
-                },
-                {
-                    roll =  { p = -1, i = -1, d = -1, f = -1},
-                    pitch = { p = -1, i = -1, d = -1, f = -1},
-                    yaw =   { p = -1, i = -1, d = -1 ,f = -1},
-                },
-            }
-        }
-    }
-}
+local wgt = {}
 
 
 --------------------------------------------------------------
@@ -1014,6 +917,117 @@ local function updateImage(wgt)
 
 end
 
+local function defaultWidgetValues(wgt)
+    wgt.values = {
+        craft_name = "-------",
+        timer_str = "--:--",
+        rpm = -1,
+        rpm_str = "---",
+        profile_id = -1,
+        profile_id_str = "--",
+        rate_id = -1,
+        rate_id_str = "--",
+
+        vbat = -1,
+        vcel = -1,
+        cell_percent = -1,
+        volt = -1,
+        curr = 0,
+        curr_max = 0,
+        curr_str = "0",
+        curr_max_str = "0",
+        curr_percent = 0,
+        curr_max_percent = 0,
+        capaTotal = -1,
+        capaUsed = -1,
+        capaPercent = -1,
+        capaPercent_txt = "---",
+
+        EscT = 0,
+        EscT_max = 0,
+        EscT_str = "0",
+        EscT_max_str = "0",
+        EscT_percent = 0,
+        EscT_max_percent = 0,
+
+        rqly = 0,
+        rqly_min = 0,
+        rqly_str = 0,
+        rqly_min_str = 0,
+
+        governor_str = "-------",
+        bb_enabled = true,
+        bb_percent = 0,
+        bb_size = 0,
+        bb_txt = "Blackbox: --% 0MB",
+        rescue_on = false,
+        rescue_txt = "--",
+        is_arm = false,
+        arm_fail = false,
+        arm_disable_flags_list = nil,
+        arm_disable_flags_txt = "",
+
+        img_last_name = "---",
+        img_craft_name_for_image = "---",
+        img_box_1 = nil,
+        img_replacment_area1 = nil,
+        img_box_2 = nil,
+        img_replacment_area2 = nil,
+
+        thr = 0,
+        thr_max = 0,
+    }
+
+    wgt.msp = {
+        cache = {
+            mspPidTuningAll = {
+                {
+                    roll =  { p = -1, i = -1, d = -1, f = -1},
+                    pitch = { p = -1, i = -1, d = -1, f = -1},
+                    yaw =   { p = -1, i = -1, d = -1 ,f = -1},
+                },
+                {
+                    roll =  { p = -1, i = -1, d = -1, f = -1},
+                    pitch = { p = -1, i = -1, d = -1, f = -1},
+                    yaw =   { p = -1, i = -1, d = -1 ,f = -1},
+                },
+                {
+                    roll =  { p = -1, i = -1, d = -1, f = -1},
+                    pitch = { p = -1, i = -1, d = -1, f = -1},
+                    yaw =   { p = -1, i = -1, d = -1 ,f = -1},
+                },
+                {
+                    roll =  { p = -1, i = -1, d = -1, f = -1},
+                    pitch = { p = -1, i = -1, d = -1, f = -1},
+                    yaw =   { p = -1, i = -1, d = -1 ,f = -1},
+                },
+                {
+                    roll =  { p = -1, i = -1, d = -1, f = -1},
+                    pitch = { p = -1, i = -1, d = -1, f = -1},
+                    yaw =   { p = -1, i = -1, d = -1 ,f = -1},
+                },
+                {
+                    roll =  { p = -1, i = -1, d = -1, f = -1},
+                    pitch = { p = -1, i = -1, d = -1, f = -1},
+                    yaw =   { p = -1, i = -1, d = -1 ,f = -1},
+                },
+            }
+        }
+    }
+end
+
+local function reset(wgt)
+    defaultWidgetValues(wgt)
+
+    if lvgl.isFullScreen() then
+        build_ui_appmode(wgt)
+    elseif wgt.options.guiStyle==3 then
+        build_ui_modern(wgt)
+    else
+        build_ui(wgt)
+    end
+end
+
 ---------------------------------------------------------------------------------------
 
 local function update(wgt, options)
@@ -1039,6 +1053,7 @@ local function update(wgt, options)
 end
 
 local function create(zone, options)
+    defaultWidgetValues(wgt)
     wgt.zone = zone
     wgt.options = options
     return update(wgt, options)
@@ -1058,6 +1073,7 @@ local function refresh(wgt, event, touchState)
         if rf2fc.mspCacheTools ~= nil then
             wgt.is_connected, wgt.not_connected_error = rf2fc.mspCacheTools.isCacheAvailable()
             if wgt.is_connected==false then
+                reset(wgt)
                 return
             end
         end
