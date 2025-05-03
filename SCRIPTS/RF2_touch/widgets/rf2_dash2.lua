@@ -12,9 +12,11 @@ local err_img = bitmap.open(baseDir.."widgets/img/no_connection_wr.png")
 
 local fan = 3
 local fanT1 = 0
-
+local shouldShowResultPanel = false
 local wgt = {}
 
+local debugCall = 0
+local debugText = ""
 
 --------------------------------------------------------------
 local function log(fmt, ...)
@@ -448,6 +450,8 @@ build_ui_modern = function(wgt)
         }
     }})
 
+    pMain:build({{type="button", text="X", w=50, h=50, press=function() wgt.values.is_arm = true end, x=50, y=50, color=WHITE}})
+
     -- capacity
     local bCapa = pMain:box({x=5, y=145})
     bCapa:label({text=function() return string.format("Capacity (Total: %s)", wgt.values.capaTotal) end,  x=0, y=0, font=FS.FONT_6, color=titleGreyColor})
@@ -512,7 +516,7 @@ build_ui_modern = function(wgt)
     bStatusBar:label({x=3  , y=2, text=function() return string.format("elrs RQly-: %s%%", wgt.values.rqly_min) end, font=function() return (wgt.values.rqly_min >= 80) and FS.FONT_6 or FS.FONT_6  end, color=WHITE})
     bStatusBar:label({x=170, y=2, text=function() return string.format("TPwr+: %smw", getValue("TPWR+")) end, font=FS.FONT_6, color=WHITE})
     bStatusBar:label({x=300, y=2, text=function() return string.format("Thr+: %s%%", wgt.values.thr_max) end, font=FS.FONT_6, color=WHITE})
-    bStatusBar:label({x=380, y=2, text="VenbS & Shmuely", font=FS.FONT_6, color=YELLOW})
+    bStatusBar:label({x=380, y=2, text=function() return string.format("%s%s", debugText, debugCall) end, font=FS.FONT_6, color=YELLOW})
 
     -- image
     local isizew=150 --200
@@ -544,6 +548,60 @@ build_ui_modern = function(wgt)
     bNoConn:label({x=10, y=100, text=function() return wgt.not_connected_error end , font=FS.FONT_8, color=WHITE})
     bNoConn:image({x=30, y=2, w=90, h=90, file=baseDir.."widgets/img/no_connection_wr.png"})
 
+end
+
+local function showFlightResultPanel(wgt)
+    if (wgt == nil) then log("refresh(nil)") return end
+    local titleGreyColor = LIGHTGREY
+    local pResult = lvgl.box({x=0, y=0, name="panelResult", visible=function() return shouldShowResultPanel end})
+    pResult:build({{type="rectangle", x=0, y=0, w=LCD_W, h=LCD_H, color=lcd.RGB(0x111111), filled=true}})
+
+    -- Flight Time
+    pResult:build({{type="box", x=40, y=20,
+        children={
+            {type="label", text="Flight Time",  x=0, y=0, font=FS.FONT_6, color=titleGreyColor},
+            {type="label", text=function() return wgt.values.rpm_str end, x=0, y=10, font=FS.FONT_16 ,color=WHITE},
+        }
+    }})
+
+    -- Flight Time
+    pResult:build({{type="box", x=40, y=90,
+        children={
+            {type="label", text="Full Capacity",  x=0, y=0, font=FS.FONT_6, color=titleGreyColor},
+            {type="label", text=function() return wgt.values.rpm_str end, x=0, y=10, font=FS.FONT_16 ,color=WHITE},
+        }
+    }})
+
+    -- Flight Time
+    pResult:build({{type="box", x=40, y=160,
+        children={
+            {type="label", text="Used Capacity",  x=0, y=0, font=FS.FONT_6, color=titleGreyColor},
+            {type="label", text=function() return wgt.values.rpm_str end, x=0, y=10, font=FS.FONT_16 ,color=WHITE},
+        }
+    }})
+
+    pResult:build({{type="box", x=200, y=20,
+        children={
+            {type="label", text="Max Current",  x=0, y=0, font=FS.FONT_6, color=titleGreyColor},
+            {type="label", text=function() return wgt.values.rpm_str end, x=0, y=10, font=FS.FONT_16 ,color=WHITE},
+        }
+    }})
+
+    pResult:build({{type="box", x=200, y=90,
+        children={
+            {type="label", text="Max Current",  x=0, y=0, font=FS.FONT_6, color=titleGreyColor},
+            {type="label", text=function() return wgt.values.rpm_str end, x=0, y=10, font=FS.FONT_16 ,color=WHITE},
+        }
+    }})
+
+    pResult:build({{type="box", x=200, y=160,
+        children={
+            {type="label", text="Max Current",  x=0, y=0, font=FS.FONT_6, color=titleGreyColor},
+            {type="label", text=function() return wgt.values.rpm_str end, x=0, y=10, font=FS.FONT_16 ,color=WHITE},
+        }
+    }})
+
+    pResult:build({{type="button", text="X", w=50, h=50, press=function() shouldShowResultPanel = false end, x=LCD_W-70, y=20}})
 end
 
 -------------------------------------------------------------------
@@ -802,7 +860,13 @@ local function updateRescue(wgt)
 end
 
 local  function updateArm(wgt)
-    wgt.values.is_arm = wgt.mspTool.isArmed()
+    local newArmValue = wgt.mspTool.isArmed()
+    
+    if wgt.values.is_arm == true and newArmValue == false then 
+        wgt.values.arm_on_to_off = true 
+    end
+
+    wgt.values.is_arm = newArmValue
     -- log("isArmed %s:", wgt.values.is_arm)
     local flagList = wgt.mspTool.armingDisableFlagsList()
     wgt.values.arm_disable_flags_list = flagList
@@ -917,6 +981,16 @@ local function updateImage(wgt)
 
 end
 
+local function updateFlightResultPanel(wgt)    
+    if (wgt.values.arm_on_to_off == true) then
+        shouldShowResultPanel = true
+        wgt.values.arm_on_to_off = false
+        showFlightResultPanel(wgt)
+    -- elseif (wgt.values.is_arm == false and shouldShowResultPanel == true) then
+    --     shouldShowResultPanel = false
+    end
+end
+
 local function defaultWidgetValues(wgt)
     wgt.values = {
         craft_name = "-------",
@@ -966,6 +1040,7 @@ local function defaultWidgetValues(wgt)
         arm_fail = false,
         arm_disable_flags_list = nil,
         arm_disable_flags_txt = "",
+        arm_on_to_off = false,
 
         img_last_name = "---",
         img_craft_name_for_image = "---",
@@ -1014,6 +1089,11 @@ local function defaultWidgetValues(wgt)
             }
         }
     }
+end
+
+local function debug(text)
+    debugText = text
+    debugCall = debugCall + 1
 end
 
 local function reset(wgt)
@@ -1073,7 +1153,6 @@ local function refresh(wgt, event, touchState)
         if rf2fc.mspCacheTools ~= nil then
             wgt.is_connected, wgt.not_connected_error = rf2fc.mspCacheTools.isCacheAvailable()
             if wgt.is_connected==false then
-                reset(wgt)
                 return
             end
         end
@@ -1095,6 +1174,7 @@ local function refresh(wgt, event, touchState)
     updateTemperature(wgt)
     updateImage(wgt)
     updateELRS(wgt)
+    updateFlightResultPanel(wgt)
 
     if (rf2.clock() - fanT1 > 0.1) then
         fan = fan + 1
